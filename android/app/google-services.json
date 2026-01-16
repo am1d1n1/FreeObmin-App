@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "654932840054",
+    "project_id": "swap-e9630",
+    "storage_bucket": "swap-e9630.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:654932840054:android:8981cc54a7875a5b89d957",
+        "android_client_info": {
+          "package_name": "com.example.freeobmin_flutter"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAevP47EVaXhBnax9v110pjToNTR4XuQa0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
