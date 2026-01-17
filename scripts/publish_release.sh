@@ -131,15 +131,19 @@ if git rev-parse "$TAG" >/dev/null 2>&1; then
   fail "tag $TAG already exists; bump the version in pubspec.yaml"
 fi
 
+ARTIFACT_NAME="FreeObmin_v${VERSION}.apk"
+ARTIFACT_PATH="build/app/outputs/flutter-apk/${ARTIFACT_NAME}"
+cp -f "$APK_PATH" "$ARTIFACT_PATH"
+
 git tag "$TAG" -m "Release $TAG"
 git push origin "$TAG"
 
 if gh release view "$TAG" $REPO_ARG >/dev/null 2>&1; then
   echo "updating existing release $TAG"
-  gh release upload "$TAG" $REPO_ARG "$APK_PATH" --clobber
+  gh release upload "$TAG" $REPO_ARG "$ARTIFACT_PATH" --clobber
 else
   echo "creating release $TAG"
-  gh release create "$TAG" $REPO_ARG "$APK_PATH" \
+  gh release create "$TAG" $REPO_ARG "$ARTIFACT_PATH" \
     --title "$TAG" \
     --notes "$RELEASE_NOTES" \
     --target "$(git rev-parse HEAD)"
