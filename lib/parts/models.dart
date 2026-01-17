@@ -192,8 +192,7 @@ class Item {
   });
 
   List<String> get allPhotos {
-    final primary =
-        photoUrls.isNotEmpty ? photoUrls : localImagePaths;
+    final primary = photoUrls.isNotEmpty ? photoUrls : localImagePaths;
     final unique = <String>[];
     for (final photo in primary) {
       if (photo.isEmpty) continue;
@@ -717,8 +716,8 @@ class AppNotification {
 
     return AppNotification(
       id: id,
-      toUserId: (json['toКористувачId'] ?? '').toString(),
-      fromUserId: (json['fromКористувачId'] ?? '').toString(),
+      toUserId: (json['toUserId'] ?? '').toString(),
+      fromUserId: (json['fromUserId'] ?? '').toString(),
       fromName: (json['fromName'] ?? 'Користувач').toString(),
       chatId: (json['chatId'] ?? '').toString(),
       itemId: (json['itemId'] ?? '').toString(),
@@ -887,12 +886,12 @@ class LocationData {
       final districts = districtsRaw as Map<String, dynamic>;
       districts.forEach((districtName, citiesRaw) {
         final list = (citiesRaw as List)
-            .map((e) => LocationCity.fromJson(
-                e as Map<String, dynamic>? ?? const {}))
+            .map((e) =>
+                LocationCity.fromJson(e as Map<String, dynamic>? ?? const {}))
             .where((city) => city.name.isNotEmpty)
             .toList();
-        list.sort((a, b) =>
-            a.name.toLowerCase().compareTo(b.name.toLowerCase()));
+        list.sort(
+            (a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()));
         districtMap[districtName] = list;
       });
       data[regionName] = districtMap;
@@ -1076,4 +1075,3 @@ class SessionUser {
     );
   }
 }
-

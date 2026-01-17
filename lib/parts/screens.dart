@@ -223,10 +223,8 @@ class _NeoRootState extends State<NeoRoot>
                 Text(
                   notes,
                   style: TextStyle(
-                    color: Theme.of(context)
-                        .colorScheme
-                        .onSurface
-                        .withAlpha(180),
+                    color:
+                        Theme.of(context).colorScheme.onSurface.withAlpha(180),
                     fontSize: 13,
                   ),
                 ),
@@ -236,10 +234,7 @@ class _NeoRootState extends State<NeoRoot>
                 Text(
                   'Перед установкою APK в?дкрийте налаштування й дайте дозв?л '
                   'на встановлення з нев?домих джерел.',
-                  style: Theme.of(context)
-                      .textTheme
-                      .bodySmall
-                      ?.copyWith(
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
                         color: Theme.of(context).colorScheme.primary,
                       ),
                 ),
@@ -316,7 +311,8 @@ class _NeoRootState extends State<NeoRoot>
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('APK файл не знайдено в релізі. Додайте app-release.apk.'),
+            content:
+                Text('APK файл не знайдено в релізі. Додайте app-release.apk.'),
           ),
         );
       }
@@ -374,7 +370,9 @@ class _NeoRootState extends State<NeoRoot>
       );
       if (result.type != ResultType.done && mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Не вдалося запустити встановлення: ${result.message}')),
+          SnackBar(
+              content:
+                  Text('Не вдалося запустити встановлення: ${result.message}')),
         );
       }
     } catch (error) {
@@ -4137,7 +4135,6 @@ class _AdminStatCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
-    final isBlocked = neoStore.user?.isBlocked == true;
     final accent = color ?? NeoThemes.currentColor;
     return Container(
       width: (MediaQuery.of(context).size.width - 52) / 2,
@@ -4190,7 +4187,6 @@ class _AdminUserTile extends StatelessWidget {
       case UserRole.moderator:
         return 'Модератор';
       case UserRole.user:
-      default:
         return 'Користувач';
     }
   }
@@ -4882,19 +4878,15 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
       );
       if (updated != _chat) {
         setState(() => _chat = updated);
+        // Скролим к последнему сообщению при обновлении чата
+        Future.delayed(const Duration(milliseconds: 100), _scrollToBottom);
       }
     };
     neoStore.addListener(_chatListener);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       neoStore.markChatRead(widget.chatId);
       _showSafetyReminderIfNeeded();
-      if (_scrollController.hasClients) {
-        _scrollController.animateTo(
-          _scrollController.position.maxScrollExtent,
-          duration: const Duration(milliseconds: 300),
-          curve: Curves.easeOut,
-        );
-      }
+      _scrollToBottom();
     });
   }
 
@@ -5055,27 +5047,48 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
         'Вас заблоковано. Для звʼязку використовуйте чат з модератором.',
       );
       return;
-      if (_isChatBlockedForMe()) {
-        _showToast('Ви заблоковані у цьому чаті.');
-        return;
-      }
     }
     final text = _messageController.text.trim();
     if (text.isNotEmpty) {
-      neoStore.sendMessage(widget.chatId, text, itemId: _chat.relatedItemId);
+      print('═══════════════════════════════════════════════════════════');
+      print('📤 ОТПРАВКА СООБЩЕНИЯ');
+      print('═══════════════════════════════════════════════════════════');
+      print('📝 Текст: $text');
+      print('💬 Чат ID: ${widget.chatId}');
+      print('👤 Получатель: ${_chat.peerId} (${_chat.peerName})');
+      print('═══════════════════════════════════════════════════════════');
+      print('🔔 Вызов neoStore.sendMessage()...');
+      neoStore
+          .sendMessage(widget.chatId, text, itemId: _chat.relatedItemId)
+          .then((_) {
+        print('✅ sendMessage() завершена');
+      }).catchError((e) {
+        print('❌ ОШИБКА в sendMessage(): $e');
+      });
+      print('✅ neoStore.sendMessage() вызвана (асинхронно)');
       _messageController.clear();
       setState(() {
         _chat = neoStore.chats.firstWhere((c) => c.id == widget.chatId);
       });
-      WidgetsBinding.instance.addPostFrameCallback((_) {
+      // Скролим несколько раз для уверенности
+      Future.delayed(const Duration(milliseconds: 50), () {
         if (_scrollController.hasClients) {
-          _scrollController.animateTo(
-            _scrollController.position.maxScrollExtent,
-            duration: const Duration(milliseconds: 300),
-            curve: Curves.easeOut,
-          );
+          _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
         }
       });
+      Future.delayed(const Duration(milliseconds: 150), _scrollToBottom);
+      Future.delayed(const Duration(milliseconds: 400), _scrollToBottom);
+    }
+  }
+
+  void _scrollToBottom() {
+    if (_scrollController.hasClients) {
+      final maxExtent = _scrollController.position.maxScrollExtent;
+      _scrollController.animateTo(
+        maxExtent,
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeOut,
+      );
     }
   }
 
@@ -5085,10 +5098,6 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
         'Вас заблоковано. Для звʼязку використовуйте чат з модератором.',
       );
       return;
-      if (_isChatBlockedForMe()) {
-        _showToast('Ви заблоковані у цьому чаті.');
-        return;
-      }
     }
     try {
       final XFile? image = await _picker.pickImage(
@@ -5118,15 +5127,14 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
         _isUploadingImage = false;
         _uploadProgress = 0.0;
       });
-      WidgetsBinding.instance.addPostFrameCallback((_) {
+      // Скролим несколько раз для уверенности
+      Future.delayed(const Duration(milliseconds: 50), () {
         if (_scrollController.hasClients) {
-          _scrollController.animateTo(
-            _scrollController.position.maxScrollExtent,
-            duration: const Duration(milliseconds: 300),
-            curve: Curves.easeOut,
-          );
+          _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
         }
       });
+      Future.delayed(const Duration(milliseconds: 150), _scrollToBottom);
+      Future.delayed(const Duration(milliseconds: 400), _scrollToBottom);
     } catch (e) {
       if (!mounted) return;
       setState(() {
@@ -5138,52 +5146,6 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
         SnackBar(content: Text('Помилка під час вибору фото: $e')),
       );
     }
-  }
-
-  bool _isChatBlockedForMe() {
-    final meId = neoStore.user?.uid;
-    if (meId == null || meId.isEmpty) return false;
-    return _chat.blockedUsers.contains(meId);
-  }
-
-  Future<void> _toggleChatBlock() async {
-    final me = neoStore.user;
-    if (me == null || !me.isModerator) return;
-    if (_chat.peerId.isEmpty) return;
-
-    final isBlocked = _chat.blockedUsers.contains(_chat.peerId);
-    final title =
-        isBlocked ? 'Розблокувати користувача?' : 'Заблокувати користувача?';
-    final confirmText = isBlocked ? 'Розблокувати' : 'Заблокувати';
-
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text(title),
-        content: Text(
-          isBlocked
-              ? 'Користувач знову зможе писати вам у цьому чаті.'
-              : 'Користувач не зможе писати вам у цьому чаті.',
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: const Text('Скасувати'),
-          ),
-          TextButton(
-            onPressed: () => Navigator.pop(context, true),
-            child: Text(confirmText),
-          ),
-        ],
-      ),
-    );
-    if (confirmed != true) return;
-
-    await neoStore.setChatUserBlocked(
-      chatId: widget.chatId,
-      userId: _chat.peerId,
-      blocked: !isBlocked,
-    );
   }
 
   void _showToast(String message) {
@@ -5437,8 +5399,6 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
     final blockMessage = isChatBlocked
         ? 'Ви заблоковані у цьому чаті.'
         : 'Вас заблоковано. Писати можна лише модератору.';
-    final isModerator = neoStore.user?.isModerator == true;
-    final isPeerBlocked = _chat.blockedUsers.contains(_chat.peerId);
 
     return Scaffold(
       appBar: AppBar(
@@ -5480,8 +5440,10 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
               Expanded(
                 child: ListView.builder(
                   controller: _scrollController,
-                  padding: const EdgeInsets.all(20),
+                  padding: const EdgeInsets.fromLTRB(20, 20, 20, 100),
                   itemCount: _chat.messages.length,
+                  addAutomaticKeepAlives: true,
+                  addRepaintBoundaries: true,
                   itemBuilder: (context, index) {
                     final message = _chat.messages[index];
                     final isMine = message.fromMe;
@@ -7920,7 +7882,9 @@ class _NeoProfileState extends State<NeoProfile> {
       );
       if (result.type != ResultType.done && mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Не вдалося запустити встановлення: ${result.message}')),
+          SnackBar(
+              content:
+                  Text('Не вдалося запустити встановлення: ${result.message}')),
         );
       }
     } catch (error) {
@@ -11142,6 +11106,7 @@ class _ModerationItemCard extends StatelessWidget {
       item.id,
       ItemStatus.rejected,
       comment: reason.isEmpty ? null : reason,
+      requestChanges: false,
     );
     if (!context.mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
@@ -11278,7 +11243,8 @@ class _ModerationItemCard extends StatelessWidget {
                   NeoButton(
                     text: 'Опублікувати',
                     onPressed: () {
-                      neoStore.moderateItem(item.id, ItemStatus.approved);
+                      neoStore.moderateItem(item.id, ItemStatus.approved,
+                          requestChanges: false);
                       if (!context.mounted) return;
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
