@@ -33,6 +33,8 @@ if [[ ! -f ".env" ]]; then
   fail ".env file not found; create one or copy .env.example"
 fi
 
+BUMP_VERSION="${BUMP_VERSION:-minor}"
+
 get_env_value() {
   local key="$1"
   local raw
@@ -52,21 +54,67 @@ if [[ -z "$OWNER" || -z "$REPO" ]]; then
   fail "GITHUB_UPDATE_OWNER and GITHUB_UPDATE_REPO must be set in .env"
 fi
 
-VERSION_LINE="$(grep -E '^version:' pubspec.yaml | head -n1 || true)"
-if [[ -z "$VERSION_LINE" ]]; then
-  fail "failed to read the version line from pubspec.yaml"
+read_version() {
+  local line
+  line="$(grep -E '^version:' pubspec.yaml | head -n1 || true)"
+  if [[ -z "$line" ]]; then
+    fail "failed to read the version line from pubspec.yaml"
+  fi
+  echo "$line" | awk '{print $2}'
+}
+
+write_version() {
+  local new_version="$1"
+  awk -v v="$new_version" '
+    BEGIN { updated=0 }
+    /^version:/ { print "version: " v; updated=1; next }
+    { print }
+    END { if (!updated) exit 1 }
+  ' pubspec.yaml > pubspec.yaml.tmp && mv -f pubspec.yaml.tmp pubspec.yaml
+}
+
+bump_minor() {
+  local version_raw="$1"
+  local base="${version_raw%%+*}"
+  local build="0"
+  if [[ "$version_raw" == *"+"* ]]; then
+    build="${version_raw#*+}"
+  fi
+  IFS='.' read -r major minor patch <<<"$base"
+  major="${major:-0}"
+  minor="${minor:-0}"
+  patch="${patch:-0}"
+  minor=$((minor + 1))
+  patch=0
+  build=$((build + 1))
+  echo "${major}.${minor}.${patch}+${build}"
+}
+
+if [[ -n $(git status --porcelain) ]]; then
+  fail "working tree is dirty; commit or stash changes before releasing"
 fi
 
-VERSION="$(echo "$VERSION_LINE" | awk '{print $2}' | cut -d+ -f1)"
+if [[ "$BUMP_VERSION" == "minor" ]]; then
+  CURRENT_VERSION="$(read_version)"
+  NEW_VERSION="$(bump_minor "$CURRENT_VERSION")"
+  echo "bumping version: ${CURRENT_VERSION} -> ${NEW_VERSION}"
+  write_version "$NEW_VERSION"
+  flutter pub get
+  if [[ -n $(git status --porcelain) ]]; then
+    git add pubspec.yaml pubspec.lock
+    git commit -m "chore: bump version to v${NEW_VERSION}"
+  fi
+elif [[ "$BUMP_VERSION" != "none" ]]; then
+  fail "unsupported BUMP_VERSION value: $BUMP_VERSION"
+fi
+
+VERSION_RAW="$(read_version)"
+VERSION="$(echo "$VERSION_RAW" | cut -d+ -f1)"
 if [[ -z "$VERSION" ]]; then
   fail "version in pubspec.yaml is empty"
 fi
 
 TAG="v$VERSION"
-
-if [[ -n $(git status --porcelain) ]]; then
-  fail "working tree is dirty; commit or stash changes before releasing"
-fi
 
 APK_PATH="build/app/outputs/flutter-apk/app-release.apk"
 RELEASE_NOTES="${RELEASE_NOTES:-Automated build $TAG ($(date -u +"%Y-%m-%d %H:%M UTC"))}"

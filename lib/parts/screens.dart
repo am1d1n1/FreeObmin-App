@@ -16,6 +16,8 @@ class _NeoRootState extends State<NeoRoot>
   String? _pendingItemId;
   String? _pendingShortCode;
   bool _welcomeShownThisSession = false;
+  final GitHubUpdateService _updateService = GitHubUpdateService();
+  bool _startupUpdateChecked = false;
 
   @override
   void initState() {
@@ -36,6 +38,7 @@ class _NeoRootState extends State<NeoRoot>
       if (mounted) {
         await _showWelcomeIfNeeded();
         _controller.forward();
+        await _checkForUpdatesOnStart();
         final pending = _pendingItemId;
         if (pending != null) {
           _pendingItemId = null;
@@ -182,6 +185,194 @@ class _NeoRootState extends State<NeoRoot>
         );
       },
     );
+  }
+
+  Future<void> _checkForUpdatesOnStart() async {
+    if (_startupUpdateChecked) return;
+    _startupUpdateChecked = true;
+
+    try {
+      final result = await _updateService.checkForUpdate();
+      if (!mounted) return;
+      if (result.updateAvailable) {
+        await _showUpdateDialogOnStart(result);
+      }
+    } catch (_) {
+      // Ignore auto-check errors on startup.
+    }
+  }
+
+  Future<void> _showUpdateDialogOnStart(UpdateCheckResult result) {
+    final notes = result.releaseNotes.trim();
+    return showDialog(
+      context: context,
+      builder: (_) => AlertDialog(
+        title: const Text('Оновлення'),
+        content: SingleChildScrollView(
+          child: ListBody(
+            children: [
+              Text('Поточна верс?я: ${result.currentVersion}'),
+              Text('Остання верс?я: ${result.latestVersion}'),
+              if (notes.isNotEmpty) ...[
+                const SizedBox(height: 12),
+                Text(
+                  'Опис рел?зу:',
+                  style: Theme.of(context).textTheme.labelLarge,
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  notes,
+                  style: TextStyle(
+                    color: Theme.of(context)
+                        .colorScheme
+                        .onSurface
+                        .withAlpha(180),
+                    fontSize: 13,
+                  ),
+                ),
+              ],
+              if (Platform.isAndroid) ...[
+                const SizedBox(height: 14),
+                Text(
+                  'Перед установкою APK в?дкрийте налаштування й дайте дозв?л '
+                  'на встановлення з нев?домих джерел.',
+                  style: Theme.of(context)
+                      .textTheme
+                      .bodySmall
+                      ?.copyWith(
+                        color: Theme.of(context).colorScheme.primary,
+                      ),
+                ),
+              ],
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => _openUrl(result.releaseUrl),
+            child: const Text('Переглянути рел?з'),
+          ),
+          if (result.updateAvailable && result.downloadUrl != null)
+            TextButton(
+              onPressed: () => _downloadAndInstallApk(result.downloadUrl!),
+              child: const Text('Оновити'),
+            ),
+          if (Platform.isAndroid)
+            TextButton(
+              onPressed: _openInstallSettings,
+              child: const Text('Налаштування установки'),
+            ),
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('Закрити'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _openUrl(Uri uri) async {
+    try {
+      final launched =
+          await launchUrl(uri, mode: LaunchMode.externalApplication);
+      if (!launched && mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Не вдалося в?дкрити ${uri.toString()}')),
+        );
+      }
+    } catch (error) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Не вдалося в?дкрити посилання: $error')),
+      );
+    }
+  }
+
+  Future<void> _openInstallSettings() async {
+    if (!Platform.isAndroid) return;
+
+    try {
+      final packageInfo = await PackageInfo.fromPlatform();
+      final intent = AndroidIntent(
+        action: 'android.settings.MANAGE_UNKNOWN_APP_SOURCES',
+        data: 'package:${packageInfo.packageName}',
+      );
+      await intent.launch();
+    } catch (error) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Не вдалося в?дкрити налаштування: $error')),
+      );
+    }
+  }
+
+  Future<void> _downloadAndInstallApk(Uri apkUri) async {
+    if (!Platform.isAndroid) {
+      await _openUrl(apkUri);
+      return;
+    }
+
+    final tempDir = await getTemporaryDirectory();
+    final file = File('${tempDir.path}/freeobmin_update.apk');
+    double progress = 0;
+    StateSetter? dialogSetState;
+
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => StatefulBuilder(
+        builder: (dialogContext, setState) {
+          dialogSetState = setState;
+          return AlertDialog(
+            title: const Text('Завантаження оновлення'),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                LinearProgressIndicator(value: progress > 0 ? progress : null),
+                const SizedBox(height: 12),
+                Text('${(progress * 100).toStringAsFixed(0)}%'),
+              ],
+            ),
+          );
+        },
+      ),
+    );
+
+    try {
+      await Dio().download(
+        apkUri.toString(),
+        file.path,
+        onReceiveProgress: (received, total) {
+          if (total <= 0) return;
+          final value = received / total;
+          if (dialogSetState != null) {
+            dialogSetState!(() => progress = value);
+          }
+        },
+      );
+
+      if (mounted && Navigator.of(context).canPop()) {
+        Navigator.of(context).pop();
+      }
+
+      final result = await OpenFilex.open(
+        file.path,
+        type: 'application/vnd.android.package-archive',
+      );
+      if (result.type != ResultType.done && mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Не вдалося запустити встановлення: ${result.message}')),
+        );
+      }
+    } catch (error) {
+      if (mounted && Navigator.of(context).canPop()) {
+        Navigator.of(context).pop();
+      }
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Помилка завантаження APK: $error')),
+      );
+    }
   }
 
   @override

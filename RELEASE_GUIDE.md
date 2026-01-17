@@ -58,6 +58,13 @@ The script will:
 - create and push the tag `v<version>`
 - upload the APK to GitHub Releases
 
+By default the script bumps the minor version before release. To disable
+auto-bump, run:
+
+```bash
+BUMP_VERSION=none bash scripts/publish_release.sh
+```
+
 ## 4) Common errors
 
 ### "working tree is dirty"
