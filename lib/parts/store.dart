@@ -366,6 +366,8 @@ class NeoStore extends ChangeNotifier {
         if (_isUserChanging) return;
         _isUserChanging = true;
 
+        final previousUserId = _user?.uid ?? '';
+
         try {
           // Сбрасываем подписку на чаты при смене пользователя
           await _chatsSubscription?.cancel();
@@ -382,6 +384,10 @@ class NeoStore extends ChangeNotifier {
           _chats.clear();
 
           if (firebaseUser != null) {
+            if (previousUserId.isNotEmpty && previousUserId != firebaseUser.uid) {
+              await _clearOneSignalPlayerId(previousUserId);
+              OneSignal.logout();
+            }
             // 1) Загружаем профиль пользователя
             await _loadUserFromFirebase(firebaseUser.uid);
             _setupUserDocSubscription(firebaseUser.uid);
@@ -406,6 +412,9 @@ class NeoStore extends ChangeNotifier {
             // Гостевой режим
             if (sShowOnlineStatus) {
               await setOnlineStatus(false);
+            }
+            if (previousUserId.isNotEmpty) {
+              await _clearOneSignalPlayerId(previousUserId);
             }
             _user = null;
             OneSignal.logout();
@@ -772,6 +781,18 @@ class NeoStore extends ChangeNotifier {
           .set({'oneSignalId': playerId}, SetOptions(merge: true));
     } catch (e) {
       print('❌ Помилка сохранения OneSignal ID: $e');
+    }
+  }
+
+  Future<void> _clearOneSignalPlayerId(String uid) async {
+    if (uid.isEmpty) return;
+    try {
+      await FirebaseService.firestore!
+          .collection('users')
+          .doc(uid)
+          .set({'oneSignalId': null}, SetOptions(merge: true));
+    } catch (e) {
+      print('❌ Failed to clear OneSignal ID: $e');
     }
   }
 
@@ -1296,6 +1317,12 @@ class NeoStore extends ChangeNotifier {
           errorMessage = 'Помилка входу: ${e.message}';
       }
 
+      if (e.code == 'wrong-password' ||
+          e.code == 'user-not-found' ||
+          e.code == 'invalid-credential' ||
+          e.code == 'invalid-credentials') {
+        errorMessage = 'Невірний email або пароль.';
+      }
       throw Exception(errorMessage);
     } catch (e) {
       rethrow;
@@ -1372,8 +1399,12 @@ class NeoStore extends ChangeNotifier {
     _isUserChanging = true;
 
     try {
+      final userId = _user?.uid ?? '';
       if (sShowOnlineStatus) {
         await setOnlineStatus(false);
+      }
+      if (userId.isNotEmpty) {
+        await _clearOneSignalPlayerId(userId);
       }
       await FirebaseService.auth!.signOut();
     } catch (e) {
