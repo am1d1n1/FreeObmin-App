@@ -7693,7 +7693,10 @@ class _NeoProfileState extends State<NeoProfile> {
         Navigator.of(context).pop();
       }
 
-      final result = await OpenFilex.open(file.path);
+      final result = await OpenFilex.open(
+        file.path,
+        type: 'application/vnd.android.package-archive',
+      );
       if (result.type != ResultType.done && mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Не вдалося запустити встановлення: ${result.message}')),
