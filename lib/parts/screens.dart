@@ -183,6 +183,7 @@ class _NeoRootState extends State<NeoRoot>
       },
     );
   }
+
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     final showOnline = neoStore.sShowOnlineStatus;
@@ -327,7 +328,6 @@ class _NeoSplash extends StatelessWidget {
       ),
     );
   }
-
 }
 
 class NeoShell extends StatefulWidget {
@@ -486,7 +486,7 @@ class _NeoShellState extends State<NeoShell> {
     final user = neoStore.user;
     if (user == null || user.blockedById == null) {
       if (!context.mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
+      ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Контакт модератора недоступний'),
         ),
@@ -509,7 +509,7 @@ class _NeoShellState extends State<NeoShell> {
       );
     } catch (e) {
       if (!context.mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
+      ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Помилка: $e'),
         ),
@@ -712,13 +712,11 @@ class _NavItemState extends State<_NavItem>
             duration: const Duration(milliseconds: 200),
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
             decoration: BoxDecoration(
-              color:
-                  widget.active ? color.withAlpha(28) : Colors.transparent,
+              color: widget.active ? color.withAlpha(28) : Colors.transparent,
               borderRadius: BorderRadius.circular(14),
               border: Border.all(
-                color: widget.active
-                    ? color.withAlpha(120)
-                    : Colors.transparent,
+                color:
+                    widget.active ? color.withAlpha(120) : Colors.transparent,
               ),
             ),
             child: Column(
@@ -1368,7 +1366,8 @@ class _NeoFeedState extends State<NeoFeed> {
                             child: Container(
                               width: 180,
                               margin: EdgeInsets.only(
-                                  right: index < suggestions.length - 1 ? 12 : 0),
+                                  right:
+                                      index < suggestions.length - 1 ? 12 : 0),
                               decoration: NeoThemes.getCardDecoration(context),
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -1388,7 +1387,8 @@ class _NeoFeedState extends State<NeoFeed> {
                                   Padding(
                                     padding: const EdgeInsets.all(10),
                                     child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
                                       children: [
                                         Text(
                                           item.title,
@@ -1940,7 +1940,7 @@ class __FilterSheetState extends State<_FilterSheet> {
         color: cs.surface,
         borderRadius: BorderRadius.circular(28),
       ),
-        child: Padding(
+      child: Padding(
         padding: const EdgeInsets.all(24),
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -2385,7 +2385,9 @@ class __NeoItemCardState extends State<_NeoItemCard> {
                                     ? Icons.favorite_rounded
                                     : Icons.favorite_border_rounded,
                                 size: 18,
-                                color: _isFavorite ? Colors.redAccent : Colors.white,
+                                color: _isFavorite
+                                    ? Colors.redAccent
+                                    : Colors.white,
                               ),
                       ),
                     ),
@@ -2429,9 +2431,10 @@ class __NeoItemCardState extends State<_NeoItemCard> {
                     Expanded(
                       child: Text(
                         widget.item.city,
-                        style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                              color: cs.onSurface.withAlpha(170),
-                            ),
+                        style:
+                            Theme.of(context).textTheme.labelMedium?.copyWith(
+                                  color: cs.onSurface.withAlpha(170),
+                                ),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
@@ -2528,15 +2531,16 @@ class _NeoItemDetailPageState extends State<NeoItemDetailPage> {
     final reporter = neoStore.user;
     if (reporter == null) {
       if (!context.mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
+      ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Увійдіть, щоб надіслати скаргу')),
       );
       return;
     }
     if (reporter.uid == item.ownerId) {
       if (!context.mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Не можна скаржитися на власне оголошення')),
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+            content: Text('Не можна скаржитися на власне оголошення')),
       );
       return;
     }
@@ -3271,10 +3275,10 @@ class _NeoItemDetailPageState extends State<NeoItemDetailPage> {
                     onPressed: () async {
                       if (!neoStore.canMessageUser(item.ownerId)) {
                         if (!context.mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
+                        ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(
                             content: Text(
-                          'Вас заблоковано. Для звʼязку використовуйте чат з модератором.',
+                              'Вас заблоковано. Для звʼязку використовуйте чат з модератором.',
                             ),
                           ),
                         );
@@ -3298,7 +3302,7 @@ class _NeoItemDetailPageState extends State<NeoItemDetailPage> {
                         );
                       } catch (e) {
                         if (!context.mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
+                        ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
                             content: Text('Помилка: $e'),
                           ),
@@ -3445,7 +3449,7 @@ class _SellerProfilePageState extends State<SellerProfilePage> {
     final reporter = neoStore.user;
     if (reporter == null || _seller == null) {
       if (!context.mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
+      ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Увійдіть, щоб надіслати скаргу')),
       );
       return;
@@ -4183,7 +4187,9 @@ class _AdminUserTile extends StatelessWidget {
               TextButton.icon(
                 onPressed: isSelf ? null : () => _toggleBlock(context),
                 icon: Icon(
-                  user.isBlocked ? Icons.lock_open_rounded : Icons.block_rounded,
+                  user.isBlocked
+                      ? Icons.lock_open_rounded
+                      : Icons.block_rounded,
                   size: 18,
                   color: user.isBlocked ? Colors.green : Colors.red,
                 ),
@@ -4219,9 +4225,8 @@ class AdminUserDetailPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
     final items = neoStore.itemsByOwner(user.uid);
-    final phone = user.phone?.trim().isNotEmpty == true
-        ? user.phone!
-        : 'Не вказано';
+    final phone =
+        user.phone?.trim().isNotEmpty == true ? user.phone! : 'Не вказано';
 
     return Scaffold(
       appBar: AppBar(
@@ -4245,8 +4250,8 @@ class AdminUserDetailPage extends StatelessWidget {
                       placeholder: (context, value) => const SizedBox(
                         width: 64,
                         height: 64,
-                        child:
-                            Center(child: CircularProgressIndicator(strokeWidth: 2)),
+                        child: Center(
+                            child: CircularProgressIndicator(strokeWidth: 2)),
                       ),
                       errorWidget: (context, value, error) =>
                           const Icon(Icons.person_rounded, size: 48),
@@ -4422,7 +4427,8 @@ class AdminUserDetailPage extends StatelessWidget {
                           child: SizedBox(
                             width: 56,
                             height: 56,
-                            child: item.getImageWidget(context, fit: BoxFit.cover),
+                            child:
+                                item.getImageWidget(context, fit: BoxFit.cover),
                           ),
                         ),
                         const SizedBox(width: 12),
@@ -4845,10 +4851,10 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
         'Вас заблоковано. Для звʼязку використовуйте чат з модератором.',
       );
       return;
-    if (_isChatBlockedForMe()) {
-      _showToast('Ви заблоковані у цьому чаті.');
-      return;
-    }
+      if (_isChatBlockedForMe()) {
+        _showToast('Ви заблоковані у цьому чаті.');
+        return;
+      }
     }
     final text = _messageController.text.trim();
     if (text.isNotEmpty) {
@@ -4875,10 +4881,10 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
         'Вас заблоковано. Для звʼязку використовуйте чат з модератором.',
       );
       return;
-    if (_isChatBlockedForMe()) {
-      _showToast('Ви заблоковані у цьому чаті.');
-      return;
-    }
+      if (_isChatBlockedForMe()) {
+        _showToast('Ви заблоковані у цьому чаті.');
+        return;
+      }
     }
     try {
       final XFile? image = await _picker.pickImage(
@@ -4924,7 +4930,7 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
         _uploadProgress = 0.0;
       });
       if (!context.mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
+      ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Помилка під час вибору фото: $e')),
       );
     }
@@ -4942,9 +4948,8 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
     if (_chat.peerId.isEmpty) return;
 
     final isBlocked = _chat.blockedUsers.contains(_chat.peerId);
-    final title = isBlocked
-        ? 'Розблокувати користувача?'
-        : 'Заблокувати користувача?';
+    final title =
+        isBlocked ? 'Розблокувати користувача?' : 'Заблокувати користувача?';
     final confirmText = isBlocked ? 'Розблокувати' : 'Заблокувати';
 
     final confirmed = await showDialog<bool>(
@@ -5223,8 +5228,7 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
     final meId = neoStore.user?.uid ?? '';
-    final isChatBlocked =
-        meId.isNotEmpty && _chat.blockedUsers.contains(meId);
+    final isChatBlocked = meId.isNotEmpty && _chat.blockedUsers.contains(meId);
     final canSend = neoStore.canMessageUser(_chat.peerId) && !isChatBlocked;
     final blockMessage = isChatBlocked
         ? 'Ви заблоковані у цьому чаті.'
@@ -5277,15 +5281,15 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
                   itemBuilder: (context, index) {
                     final message = _chat.messages[index];
                     final isMine = message.fromMe;
-                    final isDark = Theme.of(context).brightness == Brightness.dark;
+                    final isDark =
+                        Theme.of(context).brightness == Brightness.dark;
                     final peerReadAt = _chat.lastRead[_chat.peerId];
                     final isReadByPeer = isMine &&
                         peerReadAt != null &&
                         !message.at.isAfter(peerReadAt);
                     return Align(
-                      alignment: isMine
-                          ? Alignment.centerRight
-                          : Alignment.centerLeft,
+                      alignment:
+                          isMine ? Alignment.centerRight : Alignment.centerLeft,
                       child: Container(
                         constraints: BoxConstraints(
                           maxWidth: MediaQuery.of(context).size.width * 0.7,
@@ -5327,7 +5331,8 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
                             ),
                             if (!isDark)
                               BoxShadow(
-                                color: Colors.white.withAlpha(isMine ? 90 : 120),
+                                color:
+                                    Colors.white.withAlpha(isMine ? 90 : 120),
                                 blurRadius: 8,
                                 offset: const Offset(-2, -2),
                               ),
@@ -5377,8 +5382,9 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
                                     message.imagePath?.isNotEmpty == true))
                               GestureDetector(
                                 onTap: () {
-                                  final image =
-                                      message.imageUrl ?? message.imagePath ?? '';
+                                  final image = message.imageUrl ??
+                                      message.imagePath ??
+                                      '';
                                   if (image.isEmpty) return;
                                   Navigator.push(
                                     context,
@@ -5392,8 +5398,10 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
                                 },
                                 child: ClipRRect(
                                   borderRadius: BorderRadius.circular(16),
-                                  child: (message.imageUrl?.isNotEmpty == true &&
-                                          (message.imageUrl!.startsWith('http') ||
+                                  child: (message.imageUrl?.isNotEmpty ==
+                                              true &&
+                                          (message.imageUrl!
+                                                  .startsWith('http') ||
                                               message.imageUrl!
                                                   .startsWith('https')))
                                       ? CachedNetworkImage(
@@ -5408,12 +5416,14 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
                                             ),
                                           ),
                                           errorWidget: (context, url, error) =>
-                                              const Icon(Icons.broken_image_rounded),
+                                              const Icon(
+                                                  Icons.broken_image_rounded),
                                         )
                                       : Image.file(
                                           File(
                                             _filePathFromImage(
-                                              message.imageUrl ?? message.imagePath,
+                                              message.imageUrl ??
+                                                  message.imagePath,
                                             ),
                                           ),
                                           width: 220,
@@ -5733,7 +5743,7 @@ class NotificationsPage extends StatelessWidget {
                                       ));
                           if (item.id.isEmpty) {
                             if (!context.mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
+                            ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(
                                 content: Text('Оголошення не знайдено'),
                               ),
@@ -5744,11 +5754,10 @@ class NotificationsPage extends StatelessWidget {
                               notification.action == 'moderation_rejected' ||
                                   notification.action == 'moderation_revision';
                           if (isStatusFeedback) {
-                            final isBlocked =
-                                neoStore.user?.isBlocked == true;
-                            final isFinalRejected = item.status ==
-                                    ItemStatus.rejected &&
-                                !item.needsRevision;
+                            final isBlocked = neoStore.user?.isBlocked == true;
+                            final isFinalRejected =
+                                item.status == ItemStatus.rejected &&
+                                    !item.needsRevision;
                             Navigator.push(
                               context,
                               MaterialPageRoute(
@@ -5763,17 +5772,16 @@ class NotificationsPage extends StatelessWidget {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) =>
-                                    NeoItemDetailPage(
-                                      itemId: item.id,
-                                      initialItem: item,
-                                    ),
+                                builder: (context) => NeoItemDetailPage(
+                                  itemId: item.id,
+                                  initialItem: item,
+                                ),
                               ),
                             );
                           }
                         } else {
                           if (!context.mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
+                          ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(
                               content: Text('Чат для сповіщення не знайдено'),
                             ),
@@ -5896,8 +5904,8 @@ class NeoChats extends StatelessWidget {
             chats.where((chat) => !isWantToGive(chat)).toList();
         final wantGiveUnread = wantGiveChats.fold<int>(
             0, (sum, chat) => sum + max(0, chat.unread));
-        final wantGetUnread = wantGetChats.fold<int>(
-            0, (sum, chat) => sum + max(0, chat.unread));
+        final wantGetUnread =
+            wantGetChats.fold<int>(0, (sum, chat) => sum + max(0, chat.unread));
 
         Widget buildChatList(List<ChatThread> list) {
           if (list.isEmpty) {
@@ -6373,11 +6381,10 @@ class NeoFavorites extends StatelessWidget {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) =>
-                                  NeoItemDetailPage(
-                                    itemId: item.id,
-                                    initialItem: item,
-                                  ),
+                              builder: (context) => NeoItemDetailPage(
+                                itemId: item.id,
+                                initialItem: item,
+                              ),
                             ),
                           );
                         },
@@ -6675,7 +6682,7 @@ class _NeoProfileState extends State<NeoProfile> {
       }
     } catch (e) {
       if (!context.mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
+      ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Помилка під час вибору фото: $e'),
         ),
@@ -6707,7 +6714,7 @@ class _NeoProfileState extends State<NeoProfile> {
   void _saveProfile() async {
     if (_nameController.text.isEmpty || _cityController.text.isEmpty) {
       if (!context.mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
+      ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Заповніть усі поля'),
         ),
@@ -6777,7 +6784,7 @@ class _NeoProfileState extends State<NeoProfile> {
       setState(() {});
 
       if (!context.mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
+      ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
             _isLoginMode
@@ -6805,16 +6812,18 @@ class _NeoProfileState extends State<NeoProfile> {
         } else if (e.toString().contains('network-request-failed') ||
             e.toString().contains('timeout') ||
             e.toString().contains('соединение')) {
-          _authError = 'Проблеми з підключенням до сервера. Перевірте інтернет.';
+          _authError =
+              'Проблеми з підключенням до сервера. Перевірте інтернет.';
         } else if (e.toString().contains('invalid-email')) {
           _authError = 'Невірний формат email.';
         } else if (e.toString().contains('weak-password')) {
-          _authError = 'Пароль занадто слабкий. Використовуйте мінімум 6 символів.';
+          _authError =
+              'Пароль занадто слабкий. Використовуйте мінімум 6 символів.';
         }
       });
 
       if (!context.mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
+      ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Помилка: $_authError'),
           backgroundColor: Colors.red,
@@ -6859,7 +6868,7 @@ class _NeoProfileState extends State<NeoProfile> {
       await FirebaseService.auth!.sendPasswordResetEmail(email: email);
       if (!mounted) return;
       if (!context.mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
+      ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Лист для відновлення пароля надіслано'),
         ),
@@ -6867,7 +6876,7 @@ class _NeoProfileState extends State<NeoProfile> {
     } catch (e) {
       if (!mounted) return;
       if (!context.mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
+      ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Помилка: $e'),
           backgroundColor: Colors.red,
@@ -7004,9 +7013,7 @@ class _NeoProfileState extends State<NeoProfile> {
         ),
         const SizedBox(height: 4),
         Text(
-          _isLoginMode
-              ? 'Увійдіть, щоб почати обмін'
-              : 'Створіть новий акаунт',
+          _isLoginMode ? 'Увійдіть, щоб почати обмін' : 'Створіть новий акаунт',
           style: TextStyle(
             color: Theme.of(context).colorScheme.onSurface.withAlpha(153),
             fontSize: 14,
@@ -7424,7 +7431,8 @@ class _NeoProfileState extends State<NeoProfile> {
               ),
             );
           },
-        ),      if (user.isModerator)
+        ),
+      if (user.isModerator)
         _ProfileItem(
           icon: Icons.gavel_rounded,
           title: 'Модерація',
@@ -7557,10 +7565,8 @@ class _NeoProfileState extends State<NeoProfile> {
                 Text(
                   notes,
                   style: TextStyle(
-                    color: Theme.of(context)
-                        .colorScheme
-                        .onSurface
-                        .withAlpha(180),
+                    color:
+                        Theme.of(context).colorScheme.onSurface.withAlpha(180),
                     fontSize: 13,
                   ),
                 ),
@@ -7570,10 +7576,7 @@ class _NeoProfileState extends State<NeoProfile> {
                 Text(
                   'Перед установкою APK відкрийте налаштування й дайте дозвіл '
                   'на встановлення з невідомих джерел.',
-                  style: Theme.of(context)
-                      .textTheme
-                      .bodySmall
-                      ?.copyWith(
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
                         color: Theme.of(context).colorScheme.primary,
                       ),
                 ),
@@ -7903,7 +7906,7 @@ class _MyItemCard extends StatelessWidget {
                                     neoStore.deleteItem(item.id);
                                     Navigator.pop(context);
                                     if (!context.mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
+                                    ScaffoldMessenger.of(context).showSnackBar(
                                       const SnackBar(
                                         content: Text('Оголошення видалено'),
                                       ),
@@ -8131,7 +8134,7 @@ class _NeoSettingsPageState extends State<NeoSettingsPage> {
 
       if (token == null || token.isEmpty) {
         if (!context.mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
+        ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('FCM токен не получен')),
         );
         return;
@@ -8148,7 +8151,7 @@ class _NeoSettingsPageState extends State<NeoSettingsPage> {
                 Clipboard.setData(ClipboardData(text: token));
                 Navigator.pop(context);
                 if (!context.mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
+                ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(content: Text('Токен скопійовано')),
                 );
               },
@@ -8164,7 +8167,7 @@ class _NeoSettingsPageState extends State<NeoSettingsPage> {
     } catch (e) {
       if (!mounted) return;
       if (!context.mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
+      ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Помилка отримання токена: $e')),
       );
     }
@@ -8177,7 +8180,7 @@ class _NeoSettingsPageState extends State<NeoSettingsPage> {
 
       if (subId == null || subId.isEmpty) {
         if (!context.mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
+        ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('OneSignal ID еще не получен')),
         );
         return;
@@ -8196,7 +8199,7 @@ class _NeoSettingsPageState extends State<NeoSettingsPage> {
                 Clipboard.setData(ClipboardData(text: content));
                 Navigator.pop(context);
                 if (!context.mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
+                ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(content: Text('ID скопійовано')),
                 );
               },
@@ -8212,7 +8215,7 @@ class _NeoSettingsPageState extends State<NeoSettingsPage> {
     } catch (e) {
       if (!mounted) return;
       if (!context.mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
+      ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Помилка отримання OneSignal ID: $e')),
       );
     }
@@ -8367,8 +8370,7 @@ class _NeoSettingsPageState extends State<NeoSettingsPage> {
                   const Divider(),
                   _SettingsSwitch(
                     title: 'Показувати онлайн статус',
-                    subtitle:
-                        'Показувати ваш онлайн статус іншим користувачам',
+                    subtitle: 'Показувати ваш онлайн статус іншим користувачам',
                     value: neoStore.sShowOnlineStatus,
                     onChanged: (value) {
                       neoStore.setSettings(showOnlineStatus: value);
@@ -8423,7 +8425,7 @@ class _NeoSettingsPageState extends State<NeoSettingsPage> {
                                 neoStore.resetData();
                                 Navigator.pop(context);
                                 if (!context.mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
+                                ScaffoldMessenger.of(context).showSnackBar(
                                   const SnackBar(
                                     content: Text('Дані скинуто'),
                                   ),
@@ -9562,9 +9564,8 @@ class _NeoEditItemPageState extends State<NeoEditItemPage> {
 
       final localPaths =
           _selectedImages.where((path) => !_isRemotePath(path)).toList();
-      final mainIndex = _mainImageIndex < uploadedUrls.length
-          ? _mainImageIndex
-          : 0;
+      final mainIndex =
+          _mainImageIndex < uploadedUrls.length ? _mainImageIndex : 0;
 
       final updatedItem = widget.item.copyWith(
         title: _titleController.text,
@@ -9610,9 +9611,8 @@ class _NeoEditItemPageState extends State<NeoEditItemPage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.readOnly
-            ? 'Перегляд оголошення'
-            : 'Редагувати оголошення'),
+        title: Text(
+            widget.readOnly ? 'Перегляд оголошення' : 'Редагувати оголошення'),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(20),
@@ -10098,7 +10098,7 @@ class __LogoutButtonState extends State<_LogoutButton> {
       // Показываем уведомление об успешном выходе
       if (mounted) {
         if (!context.mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
+        ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('Ви успішно вийшли з акаунта'),
             backgroundColor: Colors.green,
@@ -10109,7 +10109,7 @@ class __LogoutButtonState extends State<_LogoutButton> {
     } catch (e) {
       if (mounted) {
         if (!context.mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
+        ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Помилка під час виходу: $e'),
             backgroundColor: Colors.red,
@@ -10214,47 +10214,6 @@ class __LogoutButtonState extends State<_LogoutButton> {
     );
   }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 /* ===========================
         CREATE ITEM PAGE
@@ -10461,9 +10420,8 @@ class _NeoCreateItemPageState extends State<NeoCreateItemPage> {
 
       final localPaths =
           _selectedImages.where((path) => !_isRemotePath(path)).toList();
-      final mainIndex = _mainImageIndex < uploadedUrls.length
-          ? _mainImageIndex
-          : 0;
+      final mainIndex =
+          _mainImageIndex < uploadedUrls.length ? _mainImageIndex : 0;
 
       final newItem = Item(
         id: 'i_${DateTime.now().millisecondsSinceEpoch}',
@@ -11000,7 +10958,7 @@ class _ModerationItemCard extends StatelessWidget {
                     onPressed: () {
                       neoStore.moderateItem(item.id, ItemStatus.approved);
                       if (!context.mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
+                      ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
                           content: Text('Оголошення схвалено'),
                         ),
@@ -11073,9 +11031,8 @@ class _LocationPickerSheetState extends State<_LocationPickerSheet> {
         ? data.findCity(initial)
         : null;
 
-    _selectedRegion = found?.region ?? (data.regions.isNotEmpty
-        ? data.regions.first
-        : null);
+    _selectedRegion =
+        found?.region ?? (data.regions.isNotEmpty ? data.regions.first : null);
 
     if (_selectedRegion == null) return;
 
@@ -11385,9 +11342,8 @@ class _InlineDropdownState extends State<_InlineDropdown> {
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
-    final valueText = widget.value?.isNotEmpty == true
-        ? widget.value!
-        : 'Выберите';
+    final valueText =
+        widget.value?.isNotEmpty == true ? widget.value! : 'Выберите';
 
     return CompositedTransformTarget(
       link: _link,
@@ -11705,7 +11661,7 @@ class _ComplaintCard extends StatelessWidget {
                     onPressed: () {
                       neoStore.resolveComplaint(complaint, accept: false);
                       if (!context.mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
+                      ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(content: Text('Скаргу відхилено')),
                       );
                     },
@@ -11752,7 +11708,7 @@ class _ComplaintCard extends StatelessWidget {
                         moderatorReason: reason,
                       );
                       if (!context.mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
+                      ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(content: Text('Скаргу прийнято')),
                       );
                     },
@@ -11782,7 +11738,7 @@ class _ComplaintCard extends StatelessWidget {
                       blocked: false,
                     );
                     if (!context.mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
+                    ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(content: Text('Користувача розблоковано')),
                     );
                   },
@@ -11885,9 +11841,3 @@ class _ComplaintUserInfo extends StatelessWidget {
     );
   }
 }
-
-
-
-
-
-
