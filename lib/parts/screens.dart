@@ -7565,6 +7565,19 @@ class _NeoProfileState extends State<NeoProfile> {
                   ),
                 ),
               ],
+              if (Platform.isAndroid) ...[
+                const SizedBox(height: 14),
+                Text(
+                  'Перед установкою APK відкрийте налаштування й дайте дозвіл '
+                  'на встановлення з невідомих джерел.',
+                  style: Theme.of(context)
+                      .textTheme
+                      .bodySmall
+                      ?.copyWith(
+                        color: Theme.of(context).colorScheme.primary,
+                      ),
+                ),
+              ],
             ],
           ),
         ),
@@ -7577,6 +7590,11 @@ class _NeoProfileState extends State<NeoProfile> {
             TextButton(
               onPressed: () => _openUrl(result.downloadUrl!),
               child: const Text('Скачати APK'),
+            ),
+          if (Platform.isAndroid)
+            TextButton(
+              onPressed: _openInstallSettings,
+              child: const Text('Налаштування установки'),
             ),
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
@@ -7600,6 +7618,24 @@ class _NeoProfileState extends State<NeoProfile> {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Не вдалося відкрити посилання: $error')),
+      );
+    }
+  }
+
+  Future<void> _openInstallSettings() async {
+    if (!Platform.isAndroid) return;
+
+    try {
+      final packageInfo = await PackageInfo.fromPlatform();
+      final intent = AndroidIntent(
+        action: 'android.settings.MANAGE_UNKNOWN_APP_SOURCES',
+        data: 'package:${packageInfo.packageName}',
+      );
+      await intent.launch();
+    } catch (error) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Не вдалося відкрити налаштування: $error')),
       );
     }
   }

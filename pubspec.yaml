@@ -1,7 +1,7 @@
 ﻿name: freeobmin
 description: A modern Flutter app for exchanging items without money
 publish_to: 'none'
-version: 1.0.0+1
+version: 1.0.0+2
 
 environment:
   sdk: '>=3.0.0 <4.0.0'
@@ -45,7 +45,8 @@ dependencies:
   # ★ ДОБАВИТЬ ЭТИ ПЛАГИНЫ (обязательно!)
   path_provider: ^2.1.3  # Добавить
   sqflite: ^2.3.2  # Добавить
- 
+  android_intent_plus: ^2.0.5
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
