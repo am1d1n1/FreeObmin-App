@@ -33,7 +33,7 @@ git status -sb
 If you see modified files, commit them before running the release script:
 
 ```bash
-git add pubspec.yaml pubspec.lock
+git add .
 git commit -m "chore: bump version"
 git push
 ```

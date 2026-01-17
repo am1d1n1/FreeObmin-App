@@ -138,7 +138,7 @@ class _MainNavigationState extends State<MainNavigation> {
     AuraItem(
       id: "2",
       title: "Набір фарб",
-      owner: "Анна",
+      owner: "Анa",
       location: "Львів",
       category: "Творчість",
       story: "Майже нові акрилові фарби. Обміняю на пензлі.",
@@ -196,47 +196,47 @@ class _MainNavigationState extends State<MainNavigation> {
   }
 
   Widget _buildDarkBackground() => Positioned.fill(
-    child: Container(
-      decoration: const BoxDecoration(
-        gradient: RadialGradient(
-          center: Alignment(0.8, -0.5),
-          radius: 1.5,
-          colors: [Color(0xFF1E1B4B), Color(0xFF0F172A)],
+        child: Container(
+          decoration: const BoxDecoration(
+            gradient: RadialGradient(
+              center: Alignment(0.8, -0.5),
+              radius: 1.5,
+              colors: [Color(0xFF1E1B4B), Color(0xFF0F172A)],
+            ),
+          ),
         ),
-      ),
-    ),
-  );
+      );
 
   Widget _buildFeed(List<AuraItem> items) => Column(
-    children: [
-      _buildSearchHeader(),
-      Expanded(
-        child: items.isEmpty
-            ? const Center(child: Text("Нічого не знайдено"))
-            : ListView.builder(
-                padding: const EdgeInsets.fromLTRB(20, 0, 20, 100),
-                itemCount: items.length,
-                itemBuilder: (context, i) => _FeedCard(
-                  item: items[i],
-                  onFavorite: () => setState(
-                    () => items[i].isFavorite = !items[i].isFavorite,
+        children: [
+          _buildSearchHeader(),
+          Expanded(
+            child: items.isEmpty
+                ? const Center(child: Text("Нічого не знайдено"))
+                : ListView.builder(
+                    padding: const EdgeInsets.fromLTRB(20, 0, 20, 100),
+                    itemCount: items.length,
+                    itemBuilder: (context, i) => _FeedCard(
+                      item: items[i],
+                      onFavorite: () => setState(
+                        () => items[i].isFavorite = !items[i].isFavorite,
+                      ),
+                    ),
                   ),
-                ),
-              ),
-      ),
-    ],
-  );
+          ),
+        ],
+      );
 
   Widget _buildSearchHeader() => Padding(
-    padding: const EdgeInsets.all(20),
-    child: TextField(
-      onChanged: (v) => setState(() => _searchQuery = v),
-      decoration: const InputDecoration(
-        hintText: "Пошук в Аурі...",
-        prefixIcon: Icon(Icons.search_rounded),
-      ),
-    ),
-  );
+        padding: const EdgeInsets.all(20),
+        child: TextField(
+          onChanged: (v) => setState(() => _searchQuery = v),
+          decoration: const InputDecoration(
+            hintText: "Пошук в Аурі...",
+            prefixIcon: Icon(Icons.search_rounded),
+          ),
+        ),
+      );
 
   Widget _buildFavorites() {
     final favs = _items.where((i) => i.isFavorite).toList();
@@ -246,68 +246,70 @@ class _MainNavigationState extends State<MainNavigation> {
   }
 
   Widget _buildAuthPlaceholder() => Center(
-    child: Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        const Icon(Icons.lock_outline_rounded, size: 80, color: Colors.grey),
-        const SizedBox(height: 20),
-        const Text("Потрібна авторизація"),
-        ElevatedButton(onPressed: () {}, child: const Text("Увійти")),
-      ],
-    ),
-  );
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Icon(Icons.lock_outline_rounded,
+                size: 80, color: Colors.grey),
+            const SizedBox(height: 20),
+            const Text("Потрібна авторизація"),
+            ElevatedButton(onPressed: () {}, child: const Text("Увійти")),
+          ],
+        ),
+      );
 
   Widget _buildBottomNavbar() => Positioned(
-    bottom: 20,
-    left: 20,
-    right: 20,
-    child: ClipRRect(
-      borderRadius: BorderRadius.circular(30),
-      child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
-        child: Container(
-          height: 70,
-          decoration: BoxDecoration(
-            color: widget.isDark
-                ? Colors.white.withValues(alpha: 0.08)
-                : Colors.black.withValues(alpha: 0.05),
-            borderRadius: BorderRadius.circular(30),
-            border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
-          ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              _navBtn(0, Icons.grid_view_rounded),
-              _navBtn(1, Icons.favorite_rounded),
-              _addCenterBtn(),
-              _navBtn(3, Icons.chat_bubble_rounded),
-              _navBtn(4, Icons.person_rounded),
-            ],
+        bottom: 20,
+        left: 20,
+        right: 20,
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(30),
+          child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
+            child: Container(
+              height: 70,
+              decoration: BoxDecoration(
+                color: widget.isDark
+                    ? Colors.white.withValues(alpha: 0.08)
+                    : Colors.black.withValues(alpha: 0.05),
+                borderRadius: BorderRadius.circular(30),
+                border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  _navBtn(0, Icons.grid_view_rounded),
+                  _navBtn(1, Icons.favorite_rounded),
+                  _addCenterBtn(),
+                  _navBtn(3, Icons.chat_bubble_rounded),
+                  _navBtn(4, Icons.person_rounded),
+                ],
+              ),
+            ),
           ),
         ),
-      ),
-    ),
-  );
+      );
 
   Widget _navBtn(int i, IconData icon) => IconButton(
-    icon: Icon(icon, color: _tab == i ? const Color(0xFF6366F1) : Colors.grey),
-    onPressed: () => setState(() => _tab = i),
-  );
+        icon: Icon(icon,
+            color: _tab == i ? const Color(0xFF6366F1) : Colors.grey),
+        onPressed: () => setState(() => _tab = i),
+      );
 
   Widget _addCenterBtn() => GestureDetector(
-    onTap: () => setState(() => _tab = 2),
-    child: Container(
-      width: 50,
-      height: 50,
-      decoration: const BoxDecoration(
-        shape: BoxShape.circle,
-        gradient: LinearGradient(
-          colors: [Color(0xFF6366F1), Color(0xFFA855F7)],
+        onTap: () => setState(() => _tab = 2),
+        child: Container(
+          width: 50,
+          height: 50,
+          decoration: const BoxDecoration(
+            shape: BoxShape.circle,
+            gradient: LinearGradient(
+              colors: [Color(0xFF6366F1), Color(0xFFA855F7)],
+            ),
+          ),
+          child: const Icon(Icons.add, color: Colors.white),
         ),
-      ),
-      child: const Icon(Icons.add, color: Colors.white),
-    ),
-  );
+      );
 }
 
 // --- КАРТКА ТОВАРУ ---
@@ -394,20 +396,20 @@ class _FeedCard extends StatelessWidget {
   }
 
   Widget _categoryTag(String text) => Container(
-    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-    decoration: BoxDecoration(
-      color: const Color(0xFF6366F1),
-      borderRadius: BorderRadius.circular(10),
-    ),
-    child: Text(
-      text,
-      style: const TextStyle(
-        color: Colors.white,
-        fontSize: 10,
-        fontWeight: FontWeight.bold,
-      ),
-    ),
-  );
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+        decoration: BoxDecoration(
+          color: const Color(0xFF6366F1),
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: Text(
+          text,
+          style: const TextStyle(
+            color: Colors.white,
+            fontSize: 10,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      );
 }
 
 // --- ЕКРАН ДЕТАЛЕЙ ---
@@ -537,7 +539,7 @@ class _AddScreenState extends State<AddScreen> {
   final _story = TextEditingController();
   final _loc = TextEditingController();
   File? _image;
-  String _category = "Різне";
+  final String _category = "Різне";
 
   Future<void> _pickImage() async {
     final picker = ImagePicker();
@@ -692,39 +694,39 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   Widget _buildMessageBubble(Message m) => Align(
-    alignment: m.isMe ? Alignment.centerRight : Alignment.centerLeft,
-    child: Container(
-      margin: const EdgeInsets.symmetric(vertical: 5),
-      padding: const EdgeInsets.all(15),
-      decoration: BoxDecoration(
-        color: m.isMe ? const Color(0xFF6366F1) : Colors.white10,
-        borderRadius: BorderRadius.circular(20),
-      ),
-      child: Text(m.text),
-    ),
-  );
+        alignment: m.isMe ? Alignment.centerRight : Alignment.centerLeft,
+        child: Container(
+          margin: const EdgeInsets.symmetric(vertical: 5),
+          padding: const EdgeInsets.all(15),
+          decoration: BoxDecoration(
+            color: m.isMe ? const Color(0xFF6366F1) : Colors.white10,
+            borderRadius: BorderRadius.circular(20),
+          ),
+          child: Text(m.text),
+        ),
+      );
 
   Widget _buildInput() => Padding(
-    padding: const EdgeInsets.fromLTRB(20, 0, 20, 30),
-    child: Row(
-      children: [
-        Expanded(
-          child: TextField(
-            controller: _ctrl,
-            decoration: const InputDecoration(hintText: "Напишіть щось..."),
-          ),
+        padding: const EdgeInsets.fromLTRB(20, 0, 20, 30),
+        child: Row(
+          children: [
+            Expanded(
+              child: TextField(
+                controller: _ctrl,
+                decoration: const InputDecoration(hintText: "Напишіть щось..."),
+              ),
+            ),
+            const SizedBox(width: 10),
+            CircleAvatar(
+              backgroundColor: const Color(0xFF6366F1),
+              child: IconButton(
+                onPressed: _send,
+                icon: const Icon(Icons.send_rounded, color: Colors.white),
+              ),
+            ),
+          ],
         ),
-        const SizedBox(width: 10),
-        CircleAvatar(
-          backgroundColor: const Color(0xFF6366F1),
-          child: IconButton(
-            onPressed: _send,
-            icon: const Icon(Icons.send_rounded, color: Colors.white),
-          ),
-        ),
-      ],
-    ),
-  );
+      );
 }
 
 // --- ПРОФІЛЬ ---
@@ -798,11 +800,12 @@ class ProfileScreen extends StatelessWidget {
     String title,
     VoidCallback onTap, {
     Color? color,
-  }) => ListTile(
-    leading: Icon(icon, color: color),
-    title: Text(title, style: TextStyle(color: color)),
-    onTap: onTap,
-  );
+  }) =>
+      ListTile(
+        leading: Icon(icon, color: color),
+        title: Text(title, style: TextStyle(color: color)),
+        onTap: onTap,
+      );
 }
 
 class ChatListScreen extends StatelessWidget {
