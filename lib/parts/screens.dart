@@ -5872,9 +5872,26 @@ class NotificationsPage extends StatelessWidget {
       animation: neoStore,
       builder: (context, _) {
         final notifications = neoStore.notifications;
+        final hasUnread = notifications.any((n) => !n.read);
         return Scaffold(
           appBar: AppBar(
             title: const Text('Сповіщення'),
+            actions: [
+              if (hasUnread)
+                IconButton(
+                  tooltip: 'Позначити все як прочитане',
+                  icon: const Icon(Icons.done_all_rounded),
+                  onPressed: () async {
+                    await neoStore.markAllNotificationsRead();
+                    if (!context.mounted) return;
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Усі сповіщення позначено як прочитані'),
+                      ),
+                    );
+                  },
+                ),
+            ],
           ),
           body: notifications.isEmpty
               ? Center(
@@ -8387,6 +8404,26 @@ class NeoSettingsPage extends StatefulWidget {
 }
 
 class _NeoSettingsPageState extends State<NeoSettingsPage> {
+  String _appVersion = '';
+
+  @override
+  void initState() {
+    super.initState();
+    _loadAppVersion();
+  }
+
+  Future<void> _loadAppVersion() async {
+    try {
+      final info = await PackageInfo.fromPlatform();
+      if (!mounted) return;
+      setState(() {
+        _appVersion = '${info.version}+${info.buildNumber}';
+      });
+    } catch (_) {
+      // Ignore version loading errors.
+    }
+  }
+
   Future<void> _showFcmToken() async {
     try {
       await FirebaseMessaging.instance.requestPermission();
@@ -8709,6 +8746,17 @@ class _NeoSettingsPageState extends State<NeoSettingsPage> {
               ),
             ),
             const SizedBox(height: 40),
+            if (_appVersion.isNotEmpty)
+              Center(
+                child: Text(
+                  'Версія застосунку: $_appVersion',
+                  style: TextStyle(
+                    color: cs.onSurface.withAlpha(140),
+                    fontSize: 12,
+                  ),
+                ),
+              ),
+            const SizedBox(height: 16),
           ],
         ),
       ),

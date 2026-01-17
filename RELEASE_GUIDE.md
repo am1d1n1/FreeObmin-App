@@ -36,6 +36,8 @@ If you see modified files, commit them before running the release script:
 git add .
 git commit -m "chore: bump version"
 git push
+RELEASE_NOTES="одано кнопку в AppBar, яка позначає всі сповіщення як прочитані, та метод markAllNotificationsRead у сховищі" bash scripts/publish_release.sh
+
 ```
 
 If you are not ready to commit, you can temporarily stash:

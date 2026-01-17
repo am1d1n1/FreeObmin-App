@@ -664,6 +664,35 @@ class NeoStore extends ChangeNotifier {
     }
   }
 
+  Future<void> markAllNotificationsRead() async {
+    final unread = _notifications.where((n) => !n.read).toList();
+    if (unread.isEmpty) return;
+    final firestore = FirebaseService.firestore;
+    if (firestore == null) return;
+
+    try {
+      final batch = firestore.batch();
+      for (final notification in unread) {
+        batch.update(
+          firestore.collection('notifications').doc(notification.id),
+          {'read': true},
+        );
+      }
+      await batch.commit();
+    } catch (e) {
+      print('? Помилка відмітки всіх сповіщень як прочитаних: $e');
+      return;
+    }
+
+    for (var i = 0; i < _notifications.length; i++) {
+      final current = _notifications[i];
+      if (!current.read) {
+        _notifications[i] = current.copyWith(read: true);
+      }
+    }
+    notifyListeners();
+  }
+
   Future<void> _loadUserFromFirebase(String uid) async {
     try {
       final doc =
