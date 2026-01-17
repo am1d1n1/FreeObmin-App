@@ -312,8 +312,20 @@ class _NeoRootState extends State<NeoRoot>
       return;
     }
 
+    if (!apkUri.path.toLowerCase().endsWith('.apk')) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('APK файл не знайдено в релізі. Додайте app-release.apk.'),
+          ),
+        );
+      }
+      return;
+    }
+
     final tempDir = await getTemporaryDirectory();
-    final file = File('${tempDir.path}/freeobmin_update.apk');
+    final stamp = DateTime.now().millisecondsSinceEpoch;
+    final file = File('${tempDir.path}/freeobmin_update_$stamp.apk');
     double progress = 0;
     StateSetter? dialogSetState;
 
@@ -342,6 +354,7 @@ class _NeoRootState extends State<NeoRoot>
       await Dio().download(
         apkUri.toString(),
         file.path,
+        deleteOnError: true,
         onReceiveProgress: (received, total) {
           if (total <= 0) return;
           final value = received / total;

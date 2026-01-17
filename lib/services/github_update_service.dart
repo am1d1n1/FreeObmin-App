@@ -91,7 +91,6 @@ class GitHubUpdateService {
             downloadUrl = url;
             break;
           }
-          downloadUrl ??= url;
         }
       }
     }
