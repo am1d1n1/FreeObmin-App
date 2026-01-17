@@ -6796,7 +6796,8 @@ class _NeoProfileState extends State<NeoProfile> {
       );
     } catch (e) {
       setState(() {
-        _authError = e.toString();
+        final rawMessage = e.toString().replaceFirst('Exception: ', '');
+        _authError = rawMessage;
 
         if (e.toString().contains('wrong-password') ||
             e.toString().contains('Невірний пароль')) {
@@ -7591,8 +7592,8 @@ class _NeoProfileState extends State<NeoProfile> {
           ),
           if (result.updateAvailable && result.downloadUrl != null)
             TextButton(
-              onPressed: () => _openUrl(result.downloadUrl!),
-              child: const Text('Скачати APK'),
+              onPressed: () => _downloadAndInstallApk(result.downloadUrl!),
+              child: const Text('Оновити'),
             ),
           if (Platform.isAndroid)
             TextButton(
@@ -7639,6 +7640,72 @@ class _NeoProfileState extends State<NeoProfile> {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Не вдалося відкрити налаштування: $error')),
+      );
+    }
+  }
+
+  Future<void> _downloadAndInstallApk(Uri apkUri) async {
+    if (!Platform.isAndroid) {
+      await _openUrl(apkUri);
+      return;
+    }
+
+    final tempDir = await getTemporaryDirectory();
+    final file = File('${tempDir.path}/freeobmin_update.apk');
+    double progress = 0;
+    StateSetter? dialogSetState;
+
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => StatefulBuilder(
+        builder: (dialogContext, setState) {
+          dialogSetState = setState;
+          return AlertDialog(
+            title: const Text('Завантаження оновлення'),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                LinearProgressIndicator(value: progress > 0 ? progress : null),
+                const SizedBox(height: 12),
+                Text('${(progress * 100).toStringAsFixed(0)}%'),
+              ],
+            ),
+          );
+        },
+      ),
+    );
+
+    try {
+      await Dio().download(
+        apkUri.toString(),
+        file.path,
+        onReceiveProgress: (received, total) {
+          if (total <= 0) return;
+          final value = received / total;
+          if (dialogSetState != null) {
+            dialogSetState!(() => progress = value);
+          }
+        },
+      );
+
+      if (mounted && Navigator.of(context).canPop()) {
+        Navigator.of(context).pop();
+      }
+
+      final result = await OpenFilex.open(file.path);
+      if (result.type != ResultType.done && mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Не вдалося запустити встановлення: ${result.message}')),
+        );
+      }
+    } catch (error) {
+      if (mounted && Navigator.of(context).canPop()) {
+        Navigator.of(context).pop();
+      }
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Помилка завантаження APK: $error')),
       );
     }
   }
@@ -10288,7 +10355,7 @@ class _NeoCreateItemPageState extends State<NeoCreateItemPage> {
         });
       }
     } catch (e) {
-      _showToast('Ошибка при выборе фото: $e');
+      _showToast('Помилка під час вибору фото: $e');
     }
   }
 
@@ -10448,11 +10515,11 @@ class _NeoCreateItemPageState extends State<NeoCreateItemPage> {
       if (!mounted) return;
 
       _showToast(user.isModerator
-          ? 'Объявление опубликовано!'
-          : 'Объявление отправлено на модерацию');
+          ? 'Оголошення опубліковано!'
+          : 'Оголошення надіслано на модерацію');
       Navigator.pop(context);
     } catch (e) {
-      _showToast('Ошибка: $e');
+      _showToast('Помилка: $e');
     } finally {
       setState(() => _loading = false);
     }
